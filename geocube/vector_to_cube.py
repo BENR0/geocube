@@ -5,6 +5,7 @@ geocube core conversion functionality
 import numpy
 import pandas
 import xarray
+import datacube
 from rioxarray.rioxarray import DEFAULT_GRID_MAP, affine_to_coords
 
 from geocube.geo_utils.geobox import load_vector_data
@@ -66,7 +67,10 @@ class VectorToCube:
 
         """
         self._vector_data = load_vector_data(vector_data)
-        self._geobox = geobox_maker.from_vector(self._vector_data)
+        if isinstance(geobox_maker, datacube.utils.geometry._base.GeoBox):
+            self._geobox = geobox_maker
+        else:
+            self._geobox = geobox_maker.from_vector(self._vector_data)
         self._grid_coords = affine_to_coords(
             self._geobox.affine, self._geobox.width, self._geobox.height
         )
